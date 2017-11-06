@@ -6,6 +6,13 @@ single script.
 
 Note that, at the moment, custom package data is not supported.
 
+Installation
+************
+
+::
+
+  $ pip install bluesnow
+
 Usage via setup.py plugin
 *************************
 
