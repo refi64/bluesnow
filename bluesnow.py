@@ -72,8 +72,7 @@ class BlueSnow:
         self.compress = compress
 
     def install_deps(self, package_dir, pip_args):
-        ''''''
-        pip.main(['install', '-t', package_dir] + pip_args)
+        pip.main(['install', '-t', package_dir, '.'] + pip_args)
 
     def get_package_files(self, path, root=None):
         if root is None:
