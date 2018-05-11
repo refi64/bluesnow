@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 try:
     from pathlib import Path
 except ImportError:
@@ -23,9 +25,13 @@ import sys
 TEMPLATE = '''#!/usr/bin/env python3
 import importlib.abc
 import lzma
+import os
+import os.path
 import sys
 
 class Loader(importlib.abc.SourceLoader):
+    mtime = os.path.getmtime(__file__)
+
     def __init__(self, name, data):
         self.name = name
         self.data = data
@@ -36,10 +42,32 @@ class Loader(importlib.abc.SourceLoader):
         super(Loader, self).exec_module(module)
 
     def get_filename(self, fullname):
-        return self.name
+        return self.name.replace('.', os.sep) + '.py'
+
+    def _get_cached(self, path):
+        path = os.path.normpath(path)
+        path = path.replace('__pycache__/', '')
+        return os.path.join('__pycache__', '__bluesnow__', path)
 
     def get_data(self, path):
-        return self.data
+        if path.endswith('.pyc'):
+            with open(self._get_cached(path), 'rb') as fp:
+                return fp.read()
+        else:
+            assert path == self.get_filename(''), (path, self.name)
+            return self.data
+
+    def path_stats(self, path):
+        return {'mtime': self.mtime}
+
+    def set_data(self, path, data):
+        path = self._get_cached(path)
+        parent = os.path.dirname(path)
+        if not os.path.exists(parent):
+            os.makedirs(parent)
+
+        with open(path, 'wb') as fp:
+            fp.write(data)
 
 
 class Finder(importlib.abc.MetaPathFinder):
@@ -75,7 +103,7 @@ class BlueSnow:
         env = os.environ.copy()
         env['BLUESNOW_PACKING'] = 'yes'
 
-        command = [sys.executable, '-m', 'pip', 'install', '-t', package_dir, '.']
+        command = [sys.executable, '-m', 'pip', 'install', '-t', package_dir]
         command.extend(pip_args)
 
         ret = subprocess.call(command, env=env)
@@ -192,6 +220,8 @@ class BlueSnowCommand(Command):
         ep = {}
         for section, items in self.distribution.entry_points.items():
             ep.update(EntryPoint.parse_group(section, items))
+
+        requires.append('.')
 
         BlueSnow(self.output, self.compress).process(requires, ep)
 

@@ -9,7 +9,6 @@ setup(
     name='bluesnow',
     version='0.1.1',
     description='Package your Python applications into a single script',
-    long_description=readme,
     author='Ryan Gonzalez',
     author_email='rymg19@gmail.com',
     license='BSD',
