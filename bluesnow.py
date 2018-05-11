@@ -226,7 +226,7 @@ class BlueSnowCommand(Command):
         BlueSnow(self.output, self.compress).process(requires, ep)
 
 
-setuptools_cmdclass = { 'bluesnow': BlueSnowCommand }
+setuptools_cmdclass = {'bluesnow': BlueSnowCommand}
 
 
 def driver(source: ('The Python package/directory containing the entry points',
