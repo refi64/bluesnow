@@ -1,9 +1,6 @@
 from setuptools import setup
 
 
-with open('README.rst') as fp:
-    readme = fp.read()
-
 with open('requirements.txt') as fp:
     requirements = fp.read().splitlines()
 

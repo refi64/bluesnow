@@ -15,8 +15,8 @@ from tqdm import tqdm
 import io
 import lzma
 import os
-import pip
 import tempfile
+import subprocess
 import sys
 
 
@@ -72,7 +72,15 @@ class BlueSnow:
         self.compress = compress
 
     def install_deps(self, package_dir, pip_args):
-        pip.main(['install', '-t', package_dir, '.'] + pip_args)
+        env = os.environ.copy()
+        env['BLUESNOW_PACKING'] = 'yes'
+
+        command = [sys.executable, '-m', 'pip', 'install', '-t', package_dir, '.']
+        command.extend(pip_args)
+
+        ret = subprocess.call(command, env=env)
+        if ret != 0:
+            sys.exit(ret)
 
     def get_package_files(self, path, root=None):
         if root is None:
