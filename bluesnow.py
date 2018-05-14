@@ -144,7 +144,7 @@ class BlueSnow:
 
             progress.set_description('{: <50}'.format(str(shortpath)))
             with path.open('rb') as fp:
-                out.write(repr(str(module_path).replace('/', '.')))
+                out.write(repr(str(os.path.normpath(module_path)).replace('/', '.')))
                 out.write(':(')
                 out.write(str(shortpath.name == '__init__.py'))
                 out.write(',')
